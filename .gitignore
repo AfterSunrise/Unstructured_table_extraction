@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+extracted_assets/
+*.html
+*.pdf
+.vscode/
+.idea/
+.ds_store

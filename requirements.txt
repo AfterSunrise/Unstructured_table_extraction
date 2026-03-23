@@ -1,0 +1,18 @@
+# 핵심 라이브러리
+unstructured[all-docs]>=0.12.0
+
+# PDF 처리 및 레이아웃 분석용
+pdf2image
+pdfminer.six
+pi-heif
+
+# OCR 및 이미지 처리
+pytesseract
+opencv-python
+pillow
+
+# 레이아웃 감지 모델 (Figure/Table 추출용)
+layoutparser
+torch
+torchvision
+onnxruntime
