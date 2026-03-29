@@ -1,90 +1,93 @@
-# 📊 Unstructured Table & Figure Extraction
-이 프로젝트는 unstructured 라이브러리를 사용하여 PDF 문서 내의 **표(Table)**를 HTML로 변환하고, **그림(Figure/Image)**을 별도 파일로 추출하는 도구입니다.
+# 📑 정부 보고서 데이터 구조화 프로젝트 (졸업 프로젝트)
 
-## 🛠 1. 시스템 의존성 설치 (System Dependencies)
-이 라이브러리는 내부적으로 OCR과 PDF 렌더링 엔진을 사용하므로, OS별로 아래 도구들을 먼저 설치해야 합니다.
+본 프로젝트는 500페이지 내외의 방대한 정부 및 지자체 보고서(PDF)에서 핵심 정량 데이터(표, 수치)를 AI 모델을 통해 자동으로 추출하고, 이를 LLM 분석이 용이한 구조화된 데이터(Markdown/CSV)로 변환하는 시스템을 구축하는 것을 목표로 합니다.
 
-### 🍎 macOS (MacBook)
-터미널에서 Homebrew를 사용해 설치합니다.
+---
 
-```Bash
-brew install tesseract poppler
+## 🚀 프로젝트 진행 현황
+
+### 1. 완료된 작업 (Milestones)
+* **환경 구축**: macOS(Apple Silicon) 및 Windows 환경에서 Python 가상환경 및 AI 의존성 설정 완료.
+* **전처리 도구 선정**: `Unstructured` 대비 한국어 표 인식률 및 처리 속도가 뛰어난 **Marker-pdf** 엔진 도입.
+* **대규모 데이터 변환**: 약 500페이지 분량의 `seoul_re100.pdf`를 마크다운(`seoul_re100.md`)으로 변환 성공.
+    * 변환 소요 시간: 약 3.8시간 (CPU 연산 기준)
+    * 성과: 복잡한 표 구조를 `|---|` 형태의 마크다운 포맷으로 유지하며 텍스트 손실 최소화.
+
+### 2. 현재 데이터 구조
+```text
+.
+├── data/                   # 원본 PDF 파일 (Git 제외)
+├── final_output/           # Marker 변환 결과 (.md, 이미지 등)
+├── scripts/                # 데이터 가공용 파이썬 스크립트
+├── requirements.txt        # 환경 설정 파일
+└── README.md               # 프로젝트 가이드
 ```
-한국어 OCR이 필요하다면: brew install tesseract-lang (또는 기본 설치에 포함됨)
-
-### Windows
-#### 방법 A: winget 사용 (권장)
-관리자 권한의 PowerShell에서 실행합니다.
-
-```PowerShell
-# Tesseract OCR 설치
-winget install UB-Mannheim.TesseractOCR
-
-# Poppler 설치
-# Poppler는 직접 다운로드가 가장 확실합니다.
-# https://github.com/oschwartz10612/poppler-windows/releases 에서 최신 bin 폴더 압축 해제
-```
-#### 방법 B: 수동 설치 및 환경 변수 설정
-
-Tesseract: 설치 파일 실행 시 Korean 언어 팩을 체크하여 설치합니다.
-
-Poppler: 압축을 푼 뒤 bin 폴더 경로를 시스템 환경 변수 Path에 추가합니다.
 ___
 
-## 🐍 2. 파이썬 환경 설정
-프로젝트 폴더에서 가상환경을 만들고 필요한 패키지를 설치합니다.
+## **설치 및 실행 방법 (다른 컴퓨터용)**
 
-```Bash
-# 1. 가상환경 생성
-python -m venv venv
+사양이 낮은 데스크톱이나 새로운 환경에서 프로젝트를 실행할 때 아래 순서를 따르세요.
 
-# 2. 가상환경 활성화
-# (macOS/Linux)
-source venv/bin/activate
-# (Windows)
-venv\Scripts\activate
+1. 가상환경 설정
 
-# 3. 필수 패키지 설치
+```bash
+# 가상환경 생성 및 활성화
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+```
+
+2. 의존성 설치
+
+```bash
 pip install -r requirements.txt
 ```
+
+3. PDF 변환 (새로운 문서 추가시)
+
+```bash
+# 단일 파일 변환
+marker_single data/FILENAME.pdf --output_dir ./final_output --langs Korean,English
+```
+
 ___
 
-## 🚀 3. 실행 방법
-main.py (또는 작성하신 파일명)를 실행하면 extracted_figures/ 폴더에 그림이 저장되고, 표 데이터가 터미널에 출력됩니다.
+## 📅 향후 계획 (To-Do)
+앞으로 데이터의 정확도를 높이고 LLM 분석을 적용하기 위해 다음 단계를 진행할 예정입니다.
 
-```Bash
-python main.py
-```
+1. 데이터 청킹(Chunking) 최적화:
+
+    * 500페이지 텍스트를 LLM 컨텍스트 윈도우에 맞게 섹션(Heading)별로 자동 분할하는 스크립트 작성.
+
+2. 표 데이터 정제(Post-processing):
+
+    * 마크다운 내의 표 데이터를 추출하여 엑셀(CSV) 형식으로 자동 변환 및 정규화.
+
+3. RAG(Retrieval-Augmented Generation) 시스템 구축:
+
+    * 추출된 데이터를 벡터 DB에 저장하여 정부 보고서 기반 질의응답 시스템 구현.
+
+4. LLM 가공:
+
+    * Gemini/GPT API를 연동하여 복잡한 통계 수치에 대한 자동 요약 및 인사이트 도출.
+
 ___
 
-## 📂 4. 파일 구조 (Requirements.txt)
-requirements.txt 파일에는 아래 내용이 포함되어야 합니다.
+## ⚠️ 주의사항
 
-```Plaintext
-unstructured[all-docs]>=0.12.0
-pdf2image
-pdfminer.six
-pi-heif
-pytesseract
-opencv-python
-pillow
-layoutparser
-torch
-torchvision
-onnxruntime
-```
+* 용량 관리: 원본 PDF 및 추출된 이미지 자산은 용량이 크므로 Git Push 시 제외( .gitignore 설정 필수).
+
+* 연산 자원: 500페이지 이상의 대용량 파일 변환 시 CPU/GPU 점유율이 높으므로 caffeinate 등을 통해 잠자기 모드 방지 권장.
+
 ___
 
-# ⚠️ 주의사항 (Troubleshooting)
-1. Windows Tesseract 경로 에러:
-만약 TesseractNotFoundError가 발생하면 코드 상단에 설치 경로를 직접 명시하세요.
+### 💡 추가 제안: `.gitignore` 설정
+README를 만드셨다면, 대용량 파일이 깃허브에 올라가지 않도록 폴더에 **`.gitignore`** 파일도 만들어서 아래 내용을 꼭 넣어주세요.
 
-```Python
-import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+```text
+.venv/
+data/*.pdf
+final_output/
+__pycache__/
+.DS_Store
 ```
-2. Poppler 에러:
-PDF를 이미지로 변환하지 못한다는 에러가 뜨면 Poppler의 bin 폴더가 환경 변수에 잘 잡혀 있는지 확인하세요.
-
-3 한글 인식:
-partition_pdf 함수 호출 시 languages=["kor", "eng"] 옵션이 설정되어 있는지 확인하세요.
